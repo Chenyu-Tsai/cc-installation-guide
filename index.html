@@ -797,6 +797,20 @@ Updating PATH...
 <span class="ok">✓ Claude Code installed successfully!</span></div>
         </div>
 
+        <div class="os-mac">
+          <div class="callout tip">
+            <span class="icon">💡</span>
+            <div><strong>如果安裝結束時出現 Setup notes 的提示</strong>，說 <code>~/.local/bin is not in your PATH</code>，先在同一個視窗跑這行再繼續：
+              <div class="code-block" style="margin-top: 10px;">
+                <button class="copy-btn" data-copy="echo 'export PATH=&quot;$HOME/.local/bin:$PATH&quot;' >> ~/.zshrc &amp;&amp; source ~/.zshrc">
+                  <span class="copy-text">複製</span>
+                </button>
+                <code>echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc &amp;&amp; source ~/.zshrc</code>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="callout warn">
           <span class="icon">🔁</span>
           <div><strong>裝完請把 Terminal 關掉，再重新打開一次。</strong>這樣電腦才會「認得」剛剛裝好的 <code>claude</code> 指令。沒重開的話下一步會找不到指令，會白擔心一場。</div>
