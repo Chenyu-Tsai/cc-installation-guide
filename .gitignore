@@ -1,0 +1,10 @@
+# Test run artifacts (local-only — see TEST-SCRIPT.md)
+CLAUDE.md
+persona.md
+TEST-SCRIPT.md
+variants/
+*.png
+.DS_Store
+
+# gstack tooling cache
+.gstack/
