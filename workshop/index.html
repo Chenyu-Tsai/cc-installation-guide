@@ -372,8 +372,8 @@
     <div></div>
     <div>
       <span class="eyebrow">INTERLUDE</span>
-      <h1 style="margin-top: 1rem;">Round 2 之前<br>先認識四個工具</h1>
-      <h3>CLAUDE.md　·　Skills　·　MCP　·　Plan Mode + Hooks</h3>
+      <h1 style="margin-top: 1rem;">Round 2 之前<br>先認識五個工具</h1>
+      <h3>CLAUDE.md　·　Skills　·　MCP　·　Plan Mode + Hooks　·　Session</h3>
     </div>
     <div></div>
   </section>
@@ -381,7 +381,7 @@
   <!-- 10. CLAUDE.md -->
   <section class="slide">
     <div class="head">
-      <span class="eyebrow">CONCEPT 01 / 04</span>
+      <span class="eyebrow">CONCEPT 01 / 05</span>
       <h2>CLAUDE.md</h2>
     </div>
     <p class="lede">放在專案資料夾的「給 AI 看的 brief」— 每次新對話自動讀。</p>
@@ -422,7 +422,7 @@
   <!-- 11. Skills -->
   <section class="slide">
     <div class="head">
-      <span class="eyebrow">CONCEPT 02 / 04</span>
+      <span class="eyebrow">CONCEPT 02 / 05</span>
       <h2>Skills</h2>
     </div>
     <p class="lede">別人（或你自己）寫好的「專業流程 SOP 套件」，AI 自動在對的時機呼叫。</p>
@@ -466,7 +466,7 @@
   <!-- 12. MCP -->
   <section class="slide">
     <div class="head">
-      <span class="eyebrow">CONCEPT 03 / 04</span>
+      <span class="eyebrow">CONCEPT 03 / 05</span>
       <h2>MCP</h2>
     </div>
     <p class="lede">讓 AI 直接讀寫你已經在用的平台 — 不用複製貼上搬資料。</p>
@@ -503,7 +503,7 @@
   <!-- 13. Plan + Hooks -->
   <section class="slide">
     <div class="head">
-      <span class="eyebrow">CONCEPT 04 / 04</span>
+      <span class="eyebrow">CONCEPT 04 / 05</span>
       <h2>Plan Mode + Hooks</h2>
     </div>
     <p class="lede">兩個讓 AI 行為更可控的工具。</p>
@@ -543,7 +543,50 @@
     </div>
   </section>
 
-  <!-- 14. Divider: Round 2 -->
+  <!-- 14. Session (concept 5) -->
+  <section class="slide">
+    <div class="head">
+      <span class="eyebrow">CONCEPT 05 / 05</span>
+      <h2>Session</h2>
+    </div>
+    <p class="lede">你跟 AI 的一次對話 = 一個 session。下面 6 個指令決定你怎麼開、看、收、關。</p>
+    <div class="body">
+      <div class="session-grid">
+        <div class="session-cmd">
+          <div class="cmd-name"><code>claude</code></div>
+          <div class="cmd-label">開新 session</div>
+          <div class="cmd-desc">從 terminal 啟動 Claude Code，從零開始一段對話。</div>
+        </div>
+        <div class="session-cmd">
+          <div class="cmd-name"><code>claude -r</code></div>
+          <div class="cmd-label">接續上一次</div>
+          <div class="cmd-desc">列出歷史 session 給你挑一個接續。Desktop 版可以從 sidebar 看到。</div>
+        </div>
+        <div class="session-cmd">
+          <div class="cmd-name"><code>/context</code></div>
+          <div class="cmd-label">看用量</div>
+          <div class="cmd-desc">這個 session 目前用了多少 token、context 還剩多少。</div>
+        </div>
+        <div class="session-cmd">
+          <div class="cmd-name"><code>/compact</code></div>
+          <div class="cmd-label">濃縮對話</div>
+          <div class="cmd-desc">把長對話壓縮成摘要，騰出 context 繼續跑。</div>
+        </div>
+        <div class="session-cmd">
+          <div class="cmd-name"><code>/clear</code></div>
+          <div class="cmd-label">清空重來</div>
+          <div class="cmd-desc">同一個視窗開新 session，AI 忘掉前面所有對話（設定保留）。</div>
+        </div>
+        <div class="session-cmd">
+          <div class="cmd-name"><code>/exit</code></div>
+          <div class="cmd-label">離開</div>
+          <div class="cmd-desc">關掉 Claude Code 回到 terminal。session 紀錄會保留。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 15. Divider: Round 2 -->
   <section class="slide divider-slide">
     <div></div>
     <div>
