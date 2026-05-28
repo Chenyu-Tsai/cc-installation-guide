@@ -601,18 +601,30 @@
   <section class="slide">
     <div class="head">
       <span class="eyebrow">PREP</span>
-      <h2>準備兩個檔案</h2>
+      <h2>切到 full，準備兩個檔案</h2>
     </div>
-    <p class="lede">兩個都放到「<strong>你的工作資料夾</strong>」— 就是你之後打 <code>claude</code> 指令時所在的那個資料夾。</p>
+    <p class="lede">從 vanilla 換到 full，把兩個檔案放進去 — 之後 Round 2 全部在 <code>full/</code> 裡跑。</p>
     <div class="body">
       <div class="prep-stack">
+        <div class="pre-step">
+          <span class="pre-num">①</span>
+          <div class="pre-content">
+            <h4 class="pre-title">換到 full，開新 session</h4>
+            <p class="pre-note">在 Round 1 的 CC 裡先 <code>/exit</code> 離開　→　跑下面這行　→　手打 <code>claude</code> 開新 session。</p>
+            <div class="pre-cmd-dark">
+              <code>cd .. &amp;&amp; cd full</code>
+              <button class="copy-btn-inline" data-clip="cd .. && cd full">複製</button>
+            </div>
+          </div>
+        </div>
+
         <a href="https://drive.google.com/drive/folders/1oO9MBB99B8oNVJW146P72Hy2CEWcgeWZ?usp=drive_link" target="_blank" class="skills-callout">
           <div class="left">
-            <span class="step-num">①</span>
+            <span class="step-num">②</span>
             <div class="info">
               <span class="info-label">下載 Skills</span>
               <span class="info-title">.claude/ 資料夾</span>
-              <span class="info-sub">下載後整個資料夾複製到你的工作資料夾，Claude Code 會自動載入。</span>
+              <span class="info-sub">下載後整個資料夾放進 <code>full/</code>，Claude Code 會自動載入。</span>
             </div>
           </div>
           <span class="arrow">→ Google Drive</span>
@@ -620,42 +632,27 @@
 
         <div class="template-card copy-wrap">
           <div class="tpl-head">
-            <span class="step-num">②</span>
+            <span class="step-num">③</span>
             <div class="info">
               <span class="info-label">CLAUDE.md 範本</span>
               <span class="info-title">填好範本，存成 CLAUDE.md</span>
               <span class="info-sub">放在你的工作資料夾。</span>
             </div>
           </div>
-          <button class="copy-btn" data-clip="# 我的產品
-產品名稱：
-一句話描述：
-目標用戶：
-
-# 我的研究風格
-研究方法偏好：[訪談 / 問卷 / 觀察 / 混合]
-分析時要特別關注：[情緒？行為？文化脈絡？]
-
-# 我的設計風格
+          <button class="copy-btn" data-clip="# 產品
+名稱：　　一句話：　　目標用戶：
+# 研究風格
+方法偏好：[訪談 / 問卷 / 觀察 / 混合]
+關注維度：[情緒？行為？文化脈絡？]
+# 設計風格
 視覺調性：[極簡 / 活潑 / 專業 / 溫暖...]
-品牌色：[#色號]
-不要出現的元素：[例：emoji、漸層、卡通]
-
-# 我的評估重點
+品牌色：[#色號]　　避免：[例：emoji、漸層、卡通]
+# 評估重點
 最在意：[效率？學習曲線？情感體驗？]">複製範本</button>
-<pre><span class="cmt"># 我的產品</span>
-產品名稱：<span class="var">[填]</span>　　一句話描述：<span class="var">[填]</span>　　目標用戶：<span class="var">[填]</span>
-
-<span class="cmt"># 我的研究風格</span>
-研究方法偏好：<span class="var">[訪談 / 問卷 / 觀察 / 混合]</span>
-分析時要特別關注：<span class="var">[情緒？行為？文化脈絡？]</span>
-
-<span class="cmt"># 我的設計風格</span>
-視覺調性：<span class="var">[極簡 / 活潑 / 專業 / 溫暖...]</span>
-品牌色：<span class="var">[#色號]</span>　　不要出現的元素：<span class="var">[例：emoji、漸層、卡通]</span>
-
-<span class="cmt"># 我的評估重點</span>
-最在意：<span class="var">[效率？學習曲線？情感體驗？]</span></pre>
+<pre><span class="cmt"># 產品</span>　名稱：<span class="var">[填]</span>　一句話：<span class="var">[填]</span>　目標：<span class="var">[填]</span>
+<span class="cmt"># 研究風格</span>　方法：<span class="var">[訪談 / 問卷 / 觀察 / 混合]</span>　關注：<span class="var">[情緒？行為？文化？]</span>
+<span class="cmt"># 設計風格</span>　調性：<span class="var">[極簡 / 活潑 / 專業]</span>　品牌色：<span class="var">[#]</span>　避免：<span class="var">[emoji / 漸層]</span>
+<span class="cmt"># 評估重點</span>　最在意：<span class="var">[效率 / 學習曲線 / 情感體驗]</span></pre>
         </div>
       </div>
     </div>

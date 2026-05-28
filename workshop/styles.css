@@ -1046,8 +1046,8 @@
   /* ===== p15 prep ===== */
   .prep-stack {
     display: grid;
-    grid-template-rows: auto 1fr;
-    gap: 1rem;
+    grid-template-rows: auto auto 1fr;
+    gap: 0.8rem;
     height: 100%;
   }
   .skills-callout {
