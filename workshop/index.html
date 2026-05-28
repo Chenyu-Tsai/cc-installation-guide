@@ -670,20 +670,23 @@
   <section class="slide phase-slide">
     <div class="head">
       <span class="eyebrow">PHASE 02 · 完整版</span>
-      <h2>研究報告</h2>
+      <h2>研究一條龍</h2>
     </div>
-    <p class="lede">Synthesis — 依 CLAUDE.md 關注維度挖深，產出 persona + journey。</p>
+    <p class="lede">研究主題 → 訪綱 → 模擬訪談 → 萃取 insight，4 個 skill 接力跑。</p>
     <div class="body">
       <div class="prompt">
-        <div class="label">PROMPT</div>
+        <div class="label">CHAIN</div>
         <div class="text">
-          這是 5 個訪談逐字稿（附檔）。請：①做 thematic analysis，產出 3-5 個主題　②依照 CLAUDE.md 我關注的維度，特別挖深　③產出 2 個 persona、user journey、機會點清單。
+          ① <code>/research-plan</code>　從研究主題產出計劃<br>
+          ② <code>/interview-guide</code>　從計劃寫訪綱（含 rationale + probes）<br>
+          ③ <code>/interview-simulator</code>　跑 5 個模擬訪談（沒真實資料也能練 synthesis）<br>
+          ④ <code>/thematic-analysis</code>　找 3-5 個主題 + persona + journey + 機會點
         </div>
       </div>
     </div>
     <div class="foot">
       <span class="label">對比 Round 1</span>
-      AI 找到的 theme 跟你手動編 code 比，哪個更深？有沒有找到你沒想到的？
+      AI 找到的 theme 跟你手動編 code 比，哪個更深？模擬訪談跟真實訪談的落差在哪？
     </div>
   </section>
 
@@ -712,20 +715,22 @@
   <section class="slide phase-slide">
     <div class="head">
       <span class="eyebrow">PHASE 04 · 完整版</span>
-      <h2>Evaluation</h2>
+      <h2>雙軌評估</h2>
     </div>
-    <p class="lede">Usability critique — 雙重檢查：Nielsen heuristics + design-review skill。</p>
+    <p class="lede">Usability critique — 結構化 + 設計師眼。兩個 skill 互補，不重疊。</p>
     <div class="body">
       <div class="prompt">
-        <div class="label">PROMPT</div>
+        <div class="label">CHAIN</div>
         <div class="text">
-          請對 Phase 3 的 prototype 做雙重檢查：①用 Nielsen 10 heuristics 評估，每條給：問題、嚴重度（1-4）、改善建議　②用 <code>design-review</code> 做視覺一致性檢查　③特別針對 CLAUDE.md 的「最在意」維度深入評估。
+          ① <code>/heuristic-evaluation</code>　Nielsen 10 條走一遍，每條 severity 1-4 + 證據 + fix<br>
+          ② <code>/design-review</code>　設計師眼：視覺一致性、hierarchy、AI slop pattern<br>
+          ③ 特別針對 CLAUDE.md 的「最在意」維度深入評估
         </div>
       </div>
     </div>
     <div class="foot">
       <span class="label">對比 Round 1</span>
-      抓到的問題深度差多少？跟你實際 usability test 找到的有重疊嗎？
+      結構化（heuristic）跟感受（design-review）抓到的問題重疊多少？跟你實際 usability test 比呢？
     </div>
   </section>
 
@@ -773,10 +778,10 @@
       <h2>帶回去繼續玩</h2>
       <ul class="takeaway-list">
         <li>挑一個今天沒用到的 skill 試試</li>
-        <li>拿你以前做完的研究報告（Phase 02），請 AI 蒸餾成可重用的 skill</li>
-        <li>把你的研究 SOP 包成 skill（用 <code>writing-skills</code>）</li>
-        <li>接一個 MCP 到 Figma 或 Notion</li>
-        <li>設一個 PostToolUse hook 記錄你的設計迭代</li>
+        <li>把你的研究 SOP 包成自己的 skill（用 <code>writing-skills</code>）</li>
+        <li>想要更深更廣：<a href="https://github.com/Owl-Listener/designer-skills" target="_blank">Owl-Listener/designer-skills</a>（91 個 UX skill，9 plugin）</li>
+        <li>接 MCP 到 Figma 或 Notion，讓 AI 直接讀寫你的工作環境</li>
+        <li>設 PostToolUse hook 自動記錄設計迭代</li>
       </ul>
       <div class="manifesto">
         <div class="manifesto-line">AI 不會讓你變成 UX 設計師。<br>但會 <em>放大</em> 你已經會的事。</div>
