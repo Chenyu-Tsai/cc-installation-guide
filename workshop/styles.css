@@ -796,6 +796,52 @@
     line-height: 1.55;
   }
 
+  /* ===== Session concept: 3x2 grid of command cards ===== */
+  .session-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 1rem;
+    height: 100%;
+  }
+  .session-cmd {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1.4rem 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+  .session-cmd .cmd-name {
+    line-height: 1;
+  }
+  .session-cmd .cmd-name code {
+    background: var(--ink);
+    color: var(--code-ink);
+    font-family: "SF Mono", Menlo, monospace;
+    padding: 0.35em 0.8em;
+    border-radius: 5px;
+    font-size: clamp(1.2rem, 1.6cqw, 1.45rem);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    display: inline-block;
+  }
+  .session-cmd .cmd-label {
+    font-size: clamp(1.15rem, 1.55cqw, 1.4rem);
+    font-weight: 800;
+    color: var(--accent);
+    margin-top: 0.5rem;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+  .session-cmd .cmd-desc {
+    font-size: clamp(0.95rem, 1.25cqw, 1.15rem);
+    color: var(--ink-2);
+    line-height: 1.5;
+    margin-top: auto;
+  }
+
   /* ===== p12 MCP — added use-case to fill ===== */
   .mcp-row {
     display: grid;
