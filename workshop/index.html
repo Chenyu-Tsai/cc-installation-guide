@@ -1,0 +1,2263 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code × UX Workflow 工作坊</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #f5f3ee;
+    --bg-2: #ebe7df;
+    --ink: #111111;
+    --ink-2: #444444;
+    --muted: #777777;
+    --line: #d8d3c8;
+    --accent: #c2410c;
+    --accent-dark: #9a3209;
+    --slate: #6b7280;
+    --code-bg: #1a1a1a;
+    --code-ink: #e8e8e8;
+  }
+
+  html, body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    overflow: hidden;
+    height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .deck { position: relative; width: 100vw; height: 100vh; }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: none;
+    grid-template-rows: auto auto 1fr auto;
+    gap: 1.5rem;
+    padding: 6vh 7vw 5vh;
+    animation: fadeIn 0.25s ease;
+  }
+  .slide.active { display: grid; }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* ===== Typography ===== */
+  h1 {
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    font-weight: 900;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+  }
+  h2 {
+    font-size: clamp(2.6rem, 4.8vw, 4.2rem);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+  }
+  h3 {
+    font-size: clamp(1.3rem, 2vw, 1.8rem);
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--ink-2);
+  }
+  p {
+    font-size: clamp(1.2rem, 1.7vw, 1.55rem);
+    line-height: 1.55;
+    color: var(--ink-2);
+  }
+  .lede {
+    font-size: clamp(1.5rem, 2.2vw, 2.05rem);
+    line-height: 1.4;
+    color: var(--ink);
+    font-weight: 400;
+  }
+  ul, ol { padding-left: 1.4em; }
+  li {
+    font-size: clamp(1.15rem, 1.6vw, 1.5rem);
+    line-height: 1.55;
+    color: var(--ink-2);
+    margin-bottom: 0.35rem;
+  }
+
+  .ink { color: var(--ink); }
+  .accent { color: var(--accent); }
+  .slate-c { color: var(--slate); }
+  .muted { color: var(--muted); }
+
+  /* ===== Common slide chrome ===== */
+  .eyebrow {
+    font-size: clamp(0.9rem, 1.15vw, 1.1rem);
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .eyebrow.slate-c { color: var(--slate); }
+  .eyebrow.ink { color: var(--ink); }
+
+  .head { display: flex; flex-direction: column; gap: 0.4rem; }
+  .body { display: flex; flex-direction: column; min-height: 0; }
+  .foot {
+    border-top: 1px solid var(--line);
+    padding-top: 0.9rem;
+    font-size: clamp(1.05rem, 1.35vw, 1.25rem);
+    line-height: 1.5;
+    color: var(--ink-2);
+  }
+  .foot .label {
+    font-size: clamp(0.8rem, 1vw, 0.95rem);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 0.3rem;
+    display: block;
+  }
+  .foot .label.slate-c { color: var(--slate); }
+  .foot a { color: var(--accent); text-decoration: underline; text-underline-offset: 4px; font-weight: 600; }
+
+  /* ===== Phase slides (16-19) ===== */
+  .phase-slide .head .eyebrow {
+    font-size: clamp(1.35rem, 1.95vw, 1.75rem);
+    letter-spacing: 0.28em;
+    font-weight: 800;
+  }
+  .phase-slide h2 {
+    font-size: clamp(3.4rem, 6vw, 5.5rem);
+  }
+  .phase-slide .lede {
+    font-size: clamp(1.6rem, 2.3vw, 2.15rem);
+  }
+
+  /* ===== Title & section dividers ===== */
+  .title-slide {
+    grid-template-rows: 1fr auto 1fr;
+    align-items: center;
+    justify-items: start;
+  }
+  .title-slide h1 {
+    font-size: clamp(4rem, 9vw, 8rem);
+    line-height: 0.95;
+  }
+  .title-slide .accent { color: var(--accent); }
+  .title-slide h3 { margin-top: 1.5rem; }
+
+  .divider-slide {
+    background: var(--ink);
+    color: var(--bg);
+    grid-template-rows: 1fr auto 1fr;
+    align-items: center;
+  }
+  .divider-slide h1 { color: var(--bg); font-size: clamp(4rem, 8vw, 7rem); }
+  .divider-slide .eyebrow { color: var(--accent); }
+  .divider-slide h3 { color: rgba(245, 243, 238, 0.7); margin-top: 1.2rem; }
+
+  /* ===== Horizontal 2-block (p2, p4) ===== */
+  .horiz-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    height: 100%;
+  }
+  .tall-block {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 2.4rem 2.4rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  .tall-block.accented { border: 2px solid var(--accent); padding: calc(2.4rem - 1px) calc(2.4rem - 1px) calc(2rem - 1px); }
+  .tall-block .eyebrow {
+    font-size: clamp(1rem, 1.35vw, 1.25rem);
+    letter-spacing: 0.25em;
+  }
+  .tall-block .big-title {
+    font-size: clamp(2.4rem, 3.8vw, 3.4rem);
+    font-weight: 900;
+    letter-spacing: -0.025em;
+    line-height: 1.02;
+    margin-top: 0.2rem;
+  }
+  .tall-block .big-title.slate-c { color: var(--slate); }
+  .tall-block .big-title.accent { color: var(--accent); }
+  .tall-block .lead-line {
+    font-size: clamp(1.2rem, 1.6vw, 1.45rem);
+    color: var(--ink);
+    font-weight: 600;
+    line-height: 1.4;
+    margin-top: 0.6rem;
+  }
+  .tall-block p {
+    font-size: clamp(1.1rem, 1.45vw, 1.35rem);
+    color: var(--ink-2);
+    line-height: 1.55;
+  }
+  .tall-block .stat-line {
+    margin-top: auto;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--line);
+    display: flex;
+    gap: 1.2rem;
+    align-items: baseline;
+  }
+  .tall-block.accented .stat-line { border-top-color: rgba(194, 65, 12, 0.2); }
+  .tall-block .stat {
+    font-size: clamp(1.7rem, 2.4vw, 2.1rem);
+    font-weight: 900;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .tall-block .stat-meta {
+    font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 700;
+  }
+
+  /* ===== Phase row (4 tiles) ===== */
+  .phase-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    height: 100%;
+    align-content: center;
+  }
+  .phase-tile {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 2rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 14rem;
+  }
+  .phase-tile .num {
+    font-size: clamp(3.5rem, 5.5vw, 5rem);
+    font-weight: 900;
+    color: var(--accent);
+    line-height: 0.85;
+    letter-spacing: -0.04em;
+  }
+  .phase-tile h4 {
+    font-size: clamp(1.4rem, 1.9vw, 1.7rem);
+    font-weight: 800;
+    margin-top: 0.7rem;
+    color: var(--ink);
+    line-height: 1.15;
+  }
+  .phase-tile p {
+    font-size: clamp(1rem, 1.25vw, 1.15rem);
+    color: var(--muted);
+    margin-top: 0.3rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+  }
+
+  /* ===== p5 SETUP ===== */
+  .setup-stack {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 1rem;
+    height: 100%;
+  }
+  .api-callout {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    background: var(--accent);
+    color: #fff;
+    padding: 1.2rem 1.8rem;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .api-callout:hover { background: var(--accent-dark); }
+  .api-callout-text { display: flex; flex-direction: column; gap: 0.15rem; }
+  .api-step-label {
+    font-size: clamp(0.9rem, 1.15vw, 1.1rem);
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.85);
+  }
+  .api-callout-title {
+    font-size: clamp(1.5rem, 2.2vw, 2rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+  .api-arrow {
+    font-size: clamp(1.1rem, 1.45vw, 1.35rem);
+    font-weight: 700;
+    color: #fff;
+    text-decoration: underline;
+    text-underline-offset: 5px;
+    white-space: nowrap;
+  }
+
+  .install-cols {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    height: 100%;
+  }
+  .install-col {
+    background: var(--code-bg);
+    border-radius: 10px;
+    padding: 1.3rem 1.3rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    overflow: hidden;
+  }
+  .install-col .col-tag {
+    font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+    color: var(--accent);
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+  }
+
+  /* p5: step-line — vertical layout (head row + code row) */
+  .step-line {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.55rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    padding: 1rem 1.1rem;
+  }
+  .step-line .step-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.55rem;
+  }
+  .step-line .step-head .num {
+    color: var(--accent);
+    font-family: "SF Mono", Menlo, monospace;
+    font-weight: 800;
+    font-size: clamp(1.2rem, 1.55vw, 1.4rem);
+    letter-spacing: 0.02em;
+  }
+  .step-line .step-head .lbl {
+    color: var(--bg);
+    font-size: clamp(1rem, 1.3vw, 1.2rem);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .step-line .step-body {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+  .step-line .step-code {
+    flex: 1;
+    color: var(--code-ink);
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: clamp(0.85rem, 1.05vw, 1rem);
+    line-height: 1.5;
+    word-break: break-all;
+  }
+  .step-line .step-code .cmt { color: #888; }
+  .step-line .step-code .key { color: #fbbf24; }
+  .step-line .step-code .str { color: #86efac; }
+  .step-line .step-code .var { color: #93c5fd; }
+
+  .copy-btn-mini {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: var(--bg);
+    padding: 0.3em 0.8em;
+    border-radius: 4px;
+    font-size: clamp(0.78rem, 0.95vw, 0.9rem);
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.05em;
+    transition: all 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .copy-btn-mini:hover { background: rgba(255,255,255,0.22); }
+
+  /* ===== Generic code block ===== */
+  pre {
+    background: var(--code-bg);
+    color: var(--code-ink);
+    padding: 1.6rem 2rem;
+    border-radius: 8px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: clamp(1.05rem, 1.4vw, 1.3rem);
+    line-height: 1.7;
+    overflow-x: auto;
+    margin: 0;
+  }
+  pre .cmt { color: #7a7a7a; }
+  pre .key { color: #fbbf24; }
+  pre .str { color: #86efac; }
+  pre .var { color: #93c5fd; }
+
+  code:not(pre code) {
+    background: var(--bg-2);
+    color: var(--ink);
+    padding: 0.1em 0.45em;
+    border-radius: 3px;
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 0.88em;
+    font-weight: 600;
+  }
+
+  /* ===== Copy button (default = on dark bg) ===== */
+  .copy-wrap { position: relative; }
+  .copy-btn {
+    position: absolute;
+    top: 0.8rem;
+    right: 0.9rem;
+    background: rgba(245, 243, 238, 0.1);
+    border: 1px solid rgba(245, 243, 238, 0.25);
+    color: var(--bg);
+    padding: 0.35em 0.95em;
+    border-radius: 5px;
+    font-size: clamp(0.85rem, 1.05vw, 1rem);
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    transition: all 0.15s;
+    z-index: 2;
+  }
+  .copy-btn:hover { background: rgba(245, 243, 238, 0.18); }
+
+  /* ===== p7 Vanilla prompts — editorial asymmetric ===== */
+  .prompt-stack {
+    display: grid;
+    grid-template-rows: repeat(4, 1fr);
+    gap: 0.9rem;
+    height: 100%;
+  }
+  .vp {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 1.6rem 2rem;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1.8rem;
+    align-items: center;
+  }
+  .vp-num {
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: clamp(2.6rem, 4vw, 3.4rem);
+    font-weight: 900;
+    color: var(--accent);
+    line-height: 0.85;
+    letter-spacing: -0.04em;
+    min-width: 3.2rem;
+  }
+  .vp-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+  .vp-kicker {
+    font-size: clamp(0.95rem, 1.2vw, 1.15rem);
+    font-weight: 800;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--slate);
+  }
+  .vp-pull {
+    font-size: clamp(1.45rem, 1.95vw, 1.78rem);
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.4;
+    margin: 0;
+  }
+  .vp-copy {
+    background: #fff;
+    border: 1.5px solid var(--ink);
+    color: var(--ink);
+    padding: 0.6em 1.4em;
+    border-radius: 5px;
+    font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+    font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.06em;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .vp-copy:hover { background: var(--ink); color: #fff; }
+
+  /* ===== p8 Reflection — content pulled up ===== */
+  .reflect-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    height: 100%;
+  }
+  .reflect-tile {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 2.5rem 2.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+  }
+  .reflect-tile .r-num {
+    font-size: clamp(5rem, 7.5vw, 7rem);
+    font-weight: 900;
+    color: var(--accent);
+    line-height: 0.85;
+    letter-spacing: -0.05em;
+  }
+  .reflect-tile .r-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .reflect-tile h4 {
+    font-size: clamp(2.2rem, 3vw, 2.7rem);
+    font-weight: 900;
+    color: var(--ink);
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+  }
+  .reflect-tile p {
+    font-size: clamp(1.3rem, 1.7vw, 1.55rem);
+    color: var(--ink-2);
+    line-height: 1.5;
+  }
+
+  /* ===== p10: file mockup ===== */
+  .p10-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    height: 100%;
+  }
+  .file-window {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .file-tab {
+    background: var(--ink);
+    color: var(--bg);
+    padding: 0.8rem 1.3rem;
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: clamp(0.95rem, 1.2vw, 1.15rem);
+    letter-spacing: 0.05em;
+  }
+  .file-content {
+    flex: 1;
+    padding: 1.5rem 1.8rem;
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: clamp(1rem, 1.3vw, 1.2rem);
+    line-height: 1.8;
+    color: var(--ink);
+    white-space: pre-wrap;
+  }
+  .file-content .cmt { color: var(--accent); font-weight: 700; }
+  .file-content .val { color: var(--ink-2); }
+  .p10-side {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 2rem 2.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+  .p10-side .section-eyebrow {
+    font-size: clamp(0.9rem, 1.15vw, 1.05rem);
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .p10-side h4 {
+    font-size: clamp(1.5rem, 2.1vw, 1.9rem);
+    font-weight: 800;
+    color: var(--ink);
+    margin-top: -0.3rem;
+  }
+  .p10-side ul { padding-left: 1.2em; margin: 0; }
+  .p10-side li {
+    font-size: clamp(1.1rem, 1.45vw, 1.35rem);
+    color: var(--ink-2);
+    line-height: 1.5;
+    margin-bottom: 0.3rem;
+  }
+  .p10-side .analogy {
+    margin-top: auto;
+    padding-top: 1.2rem;
+    border-top: 1px solid var(--line);
+  }
+  .p10-side .analogy p {
+    font-size: clamp(1.1rem, 1.45vw, 1.35rem);
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  /* ===== p11: skills ===== */
+  .p11-grid {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 1rem;
+    height: 100%;
+  }
+  .concept-table {
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #ffffff;
+    overflow: hidden;
+  }
+  .concept-table .col { padding: 1.5rem 1.8rem; }
+  .concept-table .sep { background: var(--line); }
+  .concept-table .col-eyebrow {
+    font-size: clamp(0.9rem, 1.15vw, 1.1rem);
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+  .concept-table .col-eyebrow.slate-c { color: var(--slate); }
+  .concept-table .col-title {
+    font-size: clamp(1.7rem, 2.4vw, 2.1rem);
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .concept-table p {
+    font-size: clamp(1.1rem, 1.45vw, 1.35rem);
+    color: var(--ink-2);
+  }
+  .concept-table p.example {
+    margin-top: 0.4rem;
+    font-size: clamp(1rem, 1.25vw, 1.15rem);
+    color: var(--muted);
+  }
+  .skills-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .skills-card {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1.5rem 1.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .skills-card.accented { border: 2px solid var(--accent); }
+  .skills-card .card-eyebrow {
+    font-size: clamp(0.9rem, 1.15vw, 1.05rem);
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .skills-card .card-eyebrow.ink { color: var(--ink); }
+  .skills-card h4 {
+    font-size: clamp(1.4rem, 1.9vw, 1.7rem);
+    font-weight: 800;
+    color: var(--ink);
+  }
+  .skills-card p, .skills-card li {
+    font-size: clamp(1.05rem, 1.4vw, 1.3rem);
+    color: var(--ink-2);
+    line-height: 1.55;
+  }
+
+  /* ===== p12 MCP — added use-case to fill ===== */
+  .mcp-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    height: 100%;
+  }
+  .mcp-tile {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 2.2rem 1.8rem 1.8rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .mcp-tile .letter {
+    font-size: clamp(4.5rem, 7vw, 6.5rem);
+    font-weight: 900;
+    color: var(--accent);
+    line-height: 0.85;
+    letter-spacing: -0.05em;
+  }
+  .mcp-tile h4 {
+    font-size: clamp(1.7rem, 2.4vw, 2.1rem);
+    font-weight: 900;
+    color: var(--ink);
+    margin-top: 0.85rem;
+    line-height: 1.1;
+  }
+  .mcp-tile p {
+    font-size: clamp(1.05rem, 1.35vw, 1.25rem);
+    color: var(--ink-2);
+    margin-top: 0.4rem;
+    line-height: 1.45;
+  }
+  .mcp-tile .use-case {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+    font-size: clamp(0.95rem, 1.2vw, 1.15rem);
+    color: var(--muted);
+    line-height: 1.4;
+    width: 100%;
+  }
+  .mcp-tile .use-case::before {
+    content: "用法 — ";
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: 0.05em;
+  }
+
+  /* ===== p13 Plan + Hooks balanced ===== */
+  .p13-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    height: 100%;
+  }
+  .balance-card {
+    border-radius: 10px;
+    padding: 2rem 2.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .balance-card.dark {
+    background: var(--ink);
+    color: var(--bg);
+  }
+  .balance-card.light {
+    background: #ffffff;
+    border: 1px solid var(--line);
+  }
+  .balance-card .b-eyebrow {
+    font-size: clamp(0.95rem, 1.25vw, 1.2rem);
+    font-weight: 800;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .balance-card.light .b-eyebrow { color: var(--ink); }
+  .balance-card .b-title {
+    font-size: clamp(1.7rem, 2.4vw, 2.05rem);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-top: -0.2rem;
+  }
+  .balance-card.dark .b-title { color: var(--bg); }
+  .balance-card.light .b-title { color: var(--ink); }
+
+  .key-cap-row {
+    display: flex;
+    align-items: center;
+    gap: 1.3rem;
+    margin: 0.4rem 0;
+  }
+  .key-cap {
+    background: var(--accent);
+    color: #fff;
+    padding: 0.65rem 1.3rem;
+    border-radius: 8px;
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: clamp(1.35rem, 1.95vw, 1.75rem);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .key-cap-label {
+    font-size: clamp(1.1rem, 1.45vw, 1.35rem);
+    color: rgba(245, 243, 238, 0.7);
+  }
+
+  .balance-card .b-desc {
+    font-size: clamp(1.15rem, 1.5vw, 1.4rem);
+    line-height: 1.5;
+  }
+  .balance-card.dark .b-desc { color: rgba(245, 243, 238, 0.85); }
+  .balance-card.light .b-desc { color: var(--ink-2); }
+
+  .hooks-events {
+    list-style: none;
+    padding: 0;
+    margin: 0.3rem 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem 1rem;
+  }
+  .hooks-events li {
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: clamp(1.05rem, 1.4vw, 1.3rem);
+    color: var(--ink-2);
+    font-weight: 500;
+    padding-left: 0.6em;
+    position: relative;
+  }
+  .hooks-events li::before {
+    content: "—";
+    position: absolute;
+    left: -0.4em;
+    color: var(--muted);
+  }
+  .hooks-events li.highlight {
+    color: var(--accent);
+    font-weight: 800;
+  }
+  .hooks-events li.highlight::before { color: var(--accent); }
+  .hooks-events li.highlight::after {
+    content: " ←";
+    color: var(--accent);
+  }
+
+  .balance-card .b-foot {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid;
+  }
+  .balance-card.dark .b-foot { border-top-color: rgba(245, 243, 238, 0.18); }
+  .balance-card.light .b-foot { border-top-color: var(--line); }
+  .balance-card .b-foot-label {
+    font-size: clamp(0.85rem, 1.05vw, 1rem);
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+    display: block;
+  }
+  .balance-card .b-foot p {
+    font-size: clamp(1.1rem, 1.45vw, 1.35rem);
+    line-height: 1.5;
+  }
+  .balance-card.dark .b-foot p { color: var(--bg); }
+  .balance-card.light .b-foot p { color: var(--ink); }
+
+  /* ===== Prompt block (phases) ===== */
+  .prompt {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1.8rem 2.2rem;
+    display: grid;
+    grid-template-columns: 6rem 1fr;
+    gap: 1.8rem;
+    align-items: start;
+  }
+  .prompt .label {
+    font-size: clamp(0.9rem, 1.15vw, 1.1rem);
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding-top: 0.4rem;
+  }
+  .prompt .text {
+    font-size: clamp(1.3rem, 1.75vw, 1.6rem);
+    line-height: 1.6;
+    color: var(--ink);
+  }
+
+  /* ===== p15 prep ===== */
+  .prep-stack {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 1rem;
+    height: 100%;
+  }
+  .skills-callout {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    background: var(--accent);
+    color: #fff;
+    padding: 1.3rem 1.8rem;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+  .skills-callout:hover { background: var(--accent-dark); }
+  .skills-callout .left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .skills-callout .step-num {
+    font-size: clamp(2.2rem, 3.2vw, 2.8rem);
+    font-weight: 900;
+    line-height: 1;
+    color: rgba(255,255,255,0.6);
+  }
+  .skills-callout .info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+  .skills-callout .info-label {
+    font-size: clamp(0.85rem, 1.1vw, 1.05rem);
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.85);
+  }
+  .skills-callout .info-title {
+    font-size: clamp(1.4rem, 2vw, 1.85rem);
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -0.015em;
+  }
+  .skills-callout .info-sub {
+    font-size: clamp(1rem, 1.3vw, 1.2rem);
+    color: rgba(255,255,255,0.85);
+    margin-top: 0.2rem;
+  }
+  .skills-callout .arrow {
+    font-size: clamp(1.1rem, 1.45vw, 1.35rem);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 5px;
+    white-space: nowrap;
+  }
+
+  .template-card {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1.4rem 1.8rem 1.6rem;
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 0.9rem;
+    position: relative;
+  }
+  .template-card .tpl-head {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+  }
+  .template-card .step-num {
+    font-size: clamp(2.2rem, 3.2vw, 2.8rem);
+    font-weight: 900;
+    color: var(--line);
+    line-height: 1;
+  }
+  .template-card .info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+  .template-card .info-label {
+    font-size: clamp(0.85rem, 1.1vw, 1.05rem);
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .template-card .info-title {
+    font-size: clamp(1.4rem, 2vw, 1.85rem);
+    font-weight: 900;
+    color: var(--ink);
+    letter-spacing: -0.015em;
+  }
+  .template-card .info-sub {
+    font-size: clamp(1rem, 1.3vw, 1.2rem);
+    color: var(--ink-2);
+    margin-top: 0.2rem;
+  }
+  .template-card pre {
+    font-size: clamp(0.9rem, 1.15vw, 1.05rem);
+    line-height: 1.7;
+    padding: 1.2rem 1.5rem;
+  }
+  .template-card .copy-btn {
+    top: 1.4rem;
+    right: 1.6rem;
+    background: var(--ink);
+    color: #fff;
+    border-color: var(--ink);
+  }
+  .template-card .copy-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* ===== p20 Reflection ===== */
+  .p20-grid {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 1.5rem;
+    height: 100%;
+  }
+  .quote-strip {
+    background: var(--ink);
+    color: var(--bg);
+    border-radius: 10px;
+    padding: 1.8rem 2.4rem;
+    text-align: center;
+  }
+  .quote-strip .quote-label {
+    font-size: clamp(0.85rem, 1.05vw, 1rem);
+    color: var(--accent);
+    font-weight: 800;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+  }
+  .quote-strip .quote-text {
+    font-size: clamp(1.8rem, 2.8vw, 2.5rem);
+    font-weight: 900;
+    color: var(--bg);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  .quote-strip .quote-text em {
+    color: var(--accent);
+    font-style: normal;
+  }
+  .reflect-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  .reflect-col {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 2rem 2.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  .reflect-col.accented { border: 2px solid var(--accent); }
+  .reflect-col .col-eyebrow {
+    font-size: clamp(0.9rem, 1.15vw, 1.1rem);
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--slate);
+  }
+  .reflect-col.accented .col-eyebrow { color: var(--accent); }
+  .reflect-col h4 {
+    font-size: clamp(1.7rem, 2.4vw, 2.1rem);
+    font-weight: 900;
+    color: var(--ink);
+    margin-top: -0.2rem;
+    letter-spacing: -0.02em;
+  }
+  .reflect-col ul { padding-left: 1.2em; margin: 0; }
+  .reflect-col li {
+    font-size: clamp(1.1rem, 1.45vw, 1.35rem);
+    color: var(--ink-2);
+    margin-bottom: 0.4rem;
+    line-height: 1.5;
+  }
+
+  /* ===== p21 Closing ===== */
+  .closing {
+    grid-template-rows: 1fr auto 1fr;
+    align-items: center;
+    text-align: center;
+    justify-items: center;
+  }
+  .closing > .closing-body {
+    max-width: 60rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+  .closing .eyebrow { letter-spacing: 0.3em; }
+  .closing h2 { font-size: clamp(3rem, 5.5vw, 5rem); }
+  .closing .takeaway-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    text-align: left;
+    padding: 0;
+    list-style: none;
+    margin-top: 0.5rem;
+    max-width: 44rem;
+  }
+  .closing .takeaway-list li {
+    font-size: clamp(1.1rem, 1.45vw, 1.35rem);
+    color: var(--ink-2);
+    line-height: 1.5;
+    padding-left: 1.5rem;
+    position: relative;
+  }
+  .closing .takeaway-list li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .closing .manifesto {
+    border-top: 1px solid var(--line);
+    padding-top: 1.8rem;
+    margin-top: 1rem;
+    max-width: 48rem;
+  }
+  .closing .manifesto-line {
+    font-size: clamp(1.5rem, 2.2vw, 2rem);
+    font-weight: 800;
+    color: var(--ink);
+    line-height: 1.4;
+    letter-spacing: -0.015em;
+  }
+  .closing .manifesto-line em {
+    color: var(--accent);
+    font-style: normal;
+  }
+  .closing .manifesto-sub {
+    font-size: clamp(1.1rem, 1.45vw, 1.35rem);
+    color: var(--ink-2);
+    margin-top: 0.8rem;
+    line-height: 1.5;
+  }
+
+  /* ===== Pre-flight slide ===== */
+  .preflight-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    height: 100%;
+    justify-content: center;
+  }
+  .pre-step {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 1.7rem 2rem;
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    gap: 1.8rem;
+    align-items: start;
+  }
+  .pre-step .pre-num {
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: clamp(3.2rem, 4.8vw, 4.4rem);
+    font-weight: 900;
+    color: var(--accent);
+    line-height: 0.85;
+    letter-spacing: -0.04em;
+  }
+  .pre-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+  .pre-title {
+    font-size: clamp(1.5rem, 2vw, 1.8rem);
+    font-weight: 800;
+    color: var(--ink);
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    margin: 0;
+  }
+  .pre-cmd-dark {
+    background: var(--ink);
+    border-radius: 7px;
+    padding: 0.9rem 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .pre-cmd-dark code {
+    flex: 1;
+    color: var(--code-ink);
+    background: transparent;
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: clamp(1.05rem, 1.35vw, 1.28rem);
+    font-weight: 500;
+    padding: 0;
+    word-break: break-all;
+    line-height: 1.55;
+    letter-spacing: 0;
+  }
+  .copy-btn-inline {
+    background: rgba(245, 243, 238, 0.15);
+    border: 1px solid rgba(245, 243, 238, 0.3);
+    color: var(--bg);
+    padding: 0.4em 1em;
+    border-radius: 5px;
+    font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.06em;
+    transition: all 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .copy-btn-inline:hover { background: rgba(245, 243, 238, 0.3); }
+
+  /* ===== Copy button — unified press + copied animation ===== */
+  @keyframes copy-pop {
+    0%   { transform: scale(1); }
+    28%  { transform: scale(0.88); }
+    58%  { transform: scale(1.09); }
+    100% { transform: scale(1); }
+  }
+  @keyframes copy-shake {
+    0%, 100% { transform: translateX(0); }
+    25%      { transform: translateX(-3px); }
+    50%      { transform: translateX(3px); }
+    75%      { transform: translateX(-2px); }
+  }
+  .copy-btn, .copy-btn-mini, .copy-btn-inline, .vp-copy {
+    transition: background 0.18s ease, color 0.18s ease,
+                border-color 0.18s ease, transform 0.08s ease;
+    transform-origin: center;
+  }
+  .copy-btn:active, .copy-btn-mini:active,
+  .copy-btn-inline:active, .vp-copy:active {
+    transform: scale(0.94);
+  }
+  /* Copied state — inverted fill + pop, for buttons on dark backgrounds */
+  .copy-btn.copied,
+  .copy-btn-mini.copied,
+  .copy-btn-inline.copied {
+    background: var(--bg);
+    color: var(--ink);
+    border-color: var(--bg);
+    animation: copy-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  /* .vp-copy lives on a light card, ink border — fill ink instead */
+  .vp-copy.copied {
+    background: var(--ink);
+    color: #fff;
+    border-color: var(--ink);
+    animation: copy-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  /* template card .copy-btn is already ink — flash accent on success */
+  .template-card .copy-btn.copied {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    animation: copy-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  /* Failure — accent fill + small shake */
+  .copy-btn.copy-failed,
+  .copy-btn-mini.copy-failed,
+  .copy-btn-inline.copy-failed,
+  .vp-copy.copy-failed {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    animation: copy-shake 0.4s ease;
+  }
+
+  /* ===== Particle burst on copy success ===== */
+  .copy-particle {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0;
+    will-change: transform, opacity;
+    animation: particle-burst 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+    animation-delay: var(--delay, 0ms);
+  }
+  .copy-particle--sm { width: 4px; height: 4px; }
+  .copy-particle--lg { width: 7px; height: 7px; }
+  .copy-particle--ink { background: var(--ink); }
+  @keyframes particle-burst {
+    0% {
+      transform: translate(var(--ox), var(--oy)) translate(-50%, -50%) scale(0.6);
+      opacity: 0;
+    }
+    15% {
+      opacity: 1;
+      transform: translate(var(--ox), var(--oy)) translate(-50%, -50%) scale(1);
+    }
+    100% {
+      transform: translate(var(--ox), var(--oy)) translate(-50%, -50%)
+                 translate(var(--dx), var(--dy)) scale(0.3);
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .copy-particle { display: none; }
+  }
+  .pre-cmd-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+  }
+  .pre-chip {
+    background: var(--bg-2);
+    color: var(--accent);
+    font-family: "SF Mono", Menlo, monospace;
+    font-weight: 800;
+    padding: 0.35em 0.85em;
+    border-radius: 5px;
+    font-size: clamp(1.2rem, 1.55vw, 1.45rem);
+    letter-spacing: 0.02em;
+  }
+  .pre-cmd-note {
+    font-size: clamp(1.1rem, 1.4vw, 1.3rem);
+    color: var(--ink-2);
+    font-weight: 500;
+  }
+  .pre-note {
+    font-size: clamp(1rem, 1.3vw, 1.2rem);
+    color: var(--muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .pre-note code {
+    background: var(--bg-2);
+    color: var(--ink);
+    padding: 0.1em 0.4em;
+    border-radius: 3px;
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 0.92em;
+    font-weight: 600;
+  }
+
+  /* ===== Nav ===== */
+  .nav {
+    position: fixed;
+    bottom: 1.2rem;
+    right: 1.2rem;
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    color: var(--muted);
+    font-size: 0.95rem;
+    z-index: 10;
+  }
+  .nav button {
+    background: transparent;
+    border: 1px solid var(--line);
+    width: 36px; height: 36px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--ink);
+    transition: all 0.15s;
+  }
+  .nav button:hover { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .counter {
+    margin-right: 0.4rem;
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+</style>
+</head>
+<body>
+
+<div class="deck">
+
+  <!-- 1. 標題 -->
+  <section class="slide title-slide active">
+    <div></div>
+    <div>
+      <span class="eyebrow">UX × CLAUDE CODE 工作坊</span>
+      <h1 style="margin-top: 1rem;">用 Claude Code<br>跑一次 <span class="accent">UX 流程</span></h1>
+      <h3>你已經做過的，再做兩次 — 這次有 AI 當隊友</h3>
+    </div>
+    <div></div>
+  </section>
+
+  <!-- 2. 兩輪對照 -->
+  <section class="slide">
+    <div class="head">
+      <span class="eyebrow">OVERVIEW</span>
+      <h2>今天的對照實驗</h2>
+    </div>
+    <p class="lede">把你學期專題的 UX 流程，用 Claude Code 跑兩輪，看差異有多大。</p>
+    <div class="body">
+      <div class="horiz-2">
+        <div class="tall-block">
+          <span class="eyebrow slate-c">ROUND 01</span>
+          <div class="big-title slate-c">Vanilla 跑法</div>
+          <p class="lead-line">不做任何設定、不指引，用簡單 prompt 把四階段快速跑一遍。</p>
+          <p>就像剛安裝、什麼都沒設定的 AI — 看它自由發揮會給你什麼 baseline。</p>
+          <div class="stat-line">
+            <span class="stat">30 min</span>
+            <span class="stat-meta">走完四階段</span>
+          </div>
+        </div>
+        <div class="tall-block accented">
+          <span class="eyebrow">ROUND 02</span>
+          <div class="big-title accent">完整 Claude Code</div>
+          <p class="lead-line">加上 CLAUDE.md、Skills、MCP、Plan Mode — 用對工具的 AI。</p>
+          <p>同一個流程、同一個產品 — 看配置完整的 AI 會變得多不一樣。</p>
+          <div class="stat-line">
+            <span class="stat">50 min</span>
+            <span class="stat-meta">深入四階段</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="foot">
+      <span class="label">節奏</span>
+      Round 1 走一遍 → 中場認識四個工具 → Round 2 再走一遍 → 反思對比。
+    </div>
+  </section>
+
+  <!-- 3. 四個 UX 階段 -->
+  <section class="slide">
+    <div class="head">
+      <span class="eyebrow">THE WORKFLOW</span>
+      <h2>你熟悉的四個階段</h2>
+    </div>
+    <p class="lede">每一輪都會跑完這四個 — 跟你學期專題的流程一模一樣。</p>
+    <div class="body">
+      <div class="phase-row">
+        <div class="phase-tile">
+          <div class="num">01</div>
+          <div>
+            <h4>研究計劃</h4>
+            <p>Research Plan</p>
+          </div>
+        </div>
+        <div class="phase-tile">
+          <div class="num">02</div>
+          <div>
+            <h4>研究報告</h4>
+            <p>Synthesis</p>
+          </div>
+        </div>
+        <div class="phase-tile">
+          <div class="num">03</div>
+          <div>
+            <h4>Wireframe<br>& Prototype</h4>
+            <p>Design</p>
+          </div>
+        </div>
+        <div class="phase-tile">
+          <div class="num">04</div>
+          <div>
+            <h4>Evaluation</h4>
+            <p>Usability</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="foot">
+      <span class="label">對照</span>
+      跟你手做版做時間、深度、視角的對比 — 不是看誰勝，是看 AI 改變了 UX 工作的哪一塊。
+    </div>
+  </section>
+
+  <!-- 4. ChatGPT vs Claude Code -->
+  <section class="slide">
+    <div class="head">
+      <span class="eyebrow">CONTEXT</span>
+      <h2>Claude Code 不是 ChatGPT</h2>
+    </div>
+    <p class="lede">同樣是 AI 對話，但能做的事差非常多。</p>
+    <div class="body">
+      <div class="horiz-2">
+        <div class="tall-block">
+          <span class="eyebrow slate-c">純對話</span>
+          <div class="big-title">ChatGPT · Claude.ai</div>
+          <p class="lead-line">你問，它答。</p>
+          <p>產出的是「文字」— 你要自己複製貼上到 Figma、Notion、Docs，再手動串起來。</p>
+        </div>
+        <div class="tall-block accented">
+          <span class="eyebrow">有手有腳</span>
+          <div class="big-title accent">Claude Code</div>
+          <p class="lead-line">你說，它做。</p>
+          <p>能讀你的訪談稿、寫出 prototype HTML、開瀏覽器秀給你看、在 Figma 建 frame、在 Notion 寫頁面。</p>
+        </div>
+      </div>
+    </div>
+    <div class="foot">
+      <span class="label">對 UX 的意義</span>
+      不再「複製貼上搬資料」— AI 直接從你的工作環境讀寫。
+    </div>
+  </section>
+
+  <!-- 5. 三步驟設定 (vertical step-line) -->
+  <section class="slide">
+    <div class="head">
+      <span class="eyebrow">SETUP</span>
+      <h2>三步驟，五分鐘</h2>
+    </div>
+    <p class="lede">先拿 API Key，再依平台跑三個指令：<strong>安裝 → 設定 key → 開啟</strong>。</p>
+    <div class="body">
+      <div class="setup-stack">
+        <a href="https://drive.google.com/drive/folders/1cCGX__leRRBFsWw8OhTwsJo0OtqQ5cyr?dmr=1&amp;ec=wgc-drive-%5Bmodule%5D-goto" target="_blank" class="api-callout">
+          <div class="api-callout-text">
+            <span class="api-step-label">STEP 0 · 先做這個</span>
+            <span class="api-callout-title">拿你的 API Key（在 txt 檔裡）</span>
+          </div>
+          <span class="api-arrow">→ 打開 Google Drive Folder</span>
+        </a>
+
+        <div class="install-cols">
+          <!-- macOS / Linux -->
+          <div class="install-col">
+            <div class="col-tag">macOS / Linux</div>
+            <div class="step-line">
+              <div class="step-head">
+                <span class="num">1</span><span class="lbl">安裝</span>
+              </div>
+              <div class="step-body">
+                <span class="step-code">curl -fsSL https://claude.ai/install.sh | bash</span>
+                <button class="copy-btn-mini" data-clip="curl -fsSL https://claude.ai/install.sh | bash">複製</button>
+              </div>
+            </div>
+            <div class="step-line">
+              <div class="step-head">
+                <span class="num">2</span><span class="lbl">設定 key</span>
+              </div>
+              <div class="step-body">
+                <span class="step-code"><span class="key">export</span> ANTHROPIC_API_KEY=<span class="str">sk-ant-key</span></span>
+                <button class="copy-btn-mini" data-clip="export ANTHROPIC_API_KEY=sk-ant-你的key">複製</button>
+              </div>
+            </div>
+            <div class="step-line">
+              <div class="step-head">
+                <span class="num">3</span><span class="lbl">開啟</span>
+              </div>
+              <div class="step-body">
+                <span class="step-code">claude</span>
+                <button class="copy-btn-mini" data-clip="claude">複製</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Windows PowerShell -->
+          <div class="install-col">
+            <div class="col-tag">Win · PowerShell</div>
+            <div class="step-line">
+              <div class="step-head">
+                <span class="num">1</span><span class="lbl">安裝</span>
+              </div>
+              <div class="step-body">
+                <span class="step-code">irm https://claude.ai/install.ps1 | iex</span>
+                <button class="copy-btn-mini" data-clip="irm https://claude.ai/install.ps1 | iex">複製</button>
+              </div>
+            </div>
+            <div class="step-line">
+              <div class="step-head">
+                <span class="num">2</span><span class="lbl">設定 key</span>
+              </div>
+              <div class="step-body">
+                <span class="step-code"><span class="var">$env:</span>ANTHROPIC_API_KEY = <span class="str">"sk-ant-key"</span></span>
+                <button class="copy-btn-mini" data-clip='$env:ANTHROPIC_API_KEY = "sk-ant-你的key"'>複製</button>
+              </div>
+            </div>
+            <div class="step-line">
+              <div class="step-head">
+                <span class="num">3</span><span class="lbl">開啟</span>
+              </div>
+              <div class="step-body">
+                <span class="step-code">claude</span>
+                <button class="copy-btn-mini" data-clip="claude">複製</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Windows CMD -->
+          <div class="install-col">
+            <div class="col-tag">Win · CMD</div>
+            <div class="step-line">
+              <div class="step-head">
+                <span class="num">1</span><span class="lbl">安裝</span>
+              </div>
+              <div class="step-body">
+                <span class="step-code">curl -fsSL https://claude.ai/install.cmd -o install.cmd &amp;&amp; install.cmd &amp;&amp; del install.cmd</span>
+                <button class="copy-btn-mini" data-clip="curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd && del install.cmd">複製</button>
+              </div>
+            </div>
+            <div class="step-line">
+              <div class="step-head">
+                <span class="num">2</span><span class="lbl">設定 key</span>
+              </div>
+              <div class="step-body">
+                <span class="step-code"><span class="key">set</span> ANTHROPIC_API_KEY=<span class="str">sk-ant-key</span></span>
+                <button class="copy-btn-mini" data-clip="set ANTHROPIC_API_KEY=sk-ant-你的key">複製</button>
+              </div>
+            </div>
+            <div class="step-line">
+              <div class="step-head">
+                <span class="num">3</span><span class="lbl">開啟</span>
+              </div>
+              <div class="step-body">
+                <span class="step-code">claude</span>
+                <button class="copy-btn-mini" data-clip="claude">複製</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Divider: Round 1 -->
+  <section class="slide divider-slide">
+    <div></div>
+    <div>
+      <span class="eyebrow">PART 01 · 30 MIN</span>
+      <h1 style="margin-top: 1rem;">Round 1<br>Vanilla 跑法</h1>
+      <h3>不設定、不指引、簡單 prompt — 看 AI 自由發揮會給你什麼</h3>
+    </div>
+    <div></div>
+  </section>
+
+  <!-- 7. Pre-flight: folders + cd + claude + model/effort -->
+  <section class="slide">
+    <div class="head">
+      <span class="eyebrow slate-c">PRE-FLIGHT</span>
+      <h2>三件事，再開始</h2>
+    </div>
+    <p class="lede">在桌面建 <code>UX-Agent/</code>，裡面有 <code>vanilla/</code>（Round 1 用）和 <code>full/</code>（Round 2 用）。</p>
+    <div class="body">
+      <div class="preflight-stack">
+        <div class="pre-step">
+          <span class="pre-num">①</span>
+          <div class="pre-content">
+            <h4 class="pre-title">建好資料夾</h4>
+            <div class="pre-cmd-dark">
+              <code>mkdir Desktop/UX-Agent &amp;&amp; cd Desktop/UX-Agent &amp;&amp; mkdir vanilla &amp;&amp; mkdir full</code>
+              <button class="copy-btn-inline" data-clip="mkdir Desktop/UX-Agent && cd Desktop/UX-Agent && mkdir vanilla && mkdir full">複製</button>
+            </div>
+            <p class="pre-note">執行完你會站在 <code>Desktop/UX-Agent/</code>，裡面已經有兩個子資料夾。</p>
+          </div>
+        </div>
+        <div class="pre-step">
+          <span class="pre-num">②</span>
+          <div class="pre-content">
+            <h4 class="pre-title">進到 vanilla，再開 Claude Code</h4>
+            <div class="pre-cmd-dark">
+              <code>cd vanilla &amp;&amp; pwd</code>
+              <button class="copy-btn-inline" data-clip="cd vanilla && pwd">複製</button>
+            </div>
+            <p class="pre-note"><code>pwd</code> 會印出完整路徑 — 確認你站在 <code>.../UX-Agent/vanilla</code>，等下所有輸出都會落在這裡。</p>
+            <div class="pre-cmd-row">
+              <code class="pre-chip">claude</code>
+              <span class="pre-cmd-note">這行自己手打</span>
+            </div>
+          </div>
+        </div>
+        <div class="pre-step">
+          <span class="pre-num">③</span>
+          <div class="pre-content">
+            <h4 class="pre-title">設好 model 跟 effort</h4>
+            <p class="pre-note">進 Claude Code 介面後輸入這兩個 slash 指令。</p>
+            <div class="pre-cmd-row">
+              <code class="pre-chip">/model</code>
+              <span class="pre-cmd-note">→ 選 Sonnet</span>
+            </div>
+            <div class="pre-cmd-row">
+              <code class="pre-chip">/effort</code>
+              <span class="pre-cmd-note">→ 選 high（高思考強度）</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Round 1 任務板 (editorial) -->
+  <section class="slide">
+    <div class="head">
+      <span class="eyebrow slate-c">ROUND 01 · 一頁式</span>
+      <h2>快速跑完四階段</h2>
+    </div>
+    <p class="lede">每張卡的右側按鈕複製 prompt，貼進 Claude Code。每個跑 5-7 分鐘就往下。</p>
+    <div class="body">
+      <div class="prompt-stack">
+        <div class="vp">
+          <div class="vp-num">01</div>
+          <div class="vp-text">
+            <div class="vp-kicker">研究計劃</div>
+            <p class="vp-pull">幫我做一份 [產品] 的 UX 研究計劃。</p>
+          </div>
+          <button class="vp-copy" data-clip="幫我做一份 [產品] 的 UX 研究計劃。">複製 Prompt</button>
+        </div>
+        <div class="vp">
+          <div class="vp-num">02</div>
+          <div class="vp-text">
+            <div class="vp-kicker">研究報告</div>
+            <p class="vp-pull">這是我的訪談稿（附檔），幫我做主題分析，產出 persona。</p>
+          </div>
+          <button class="vp-copy" data-clip="這是我的訪談稿（附檔），幫我做主題分析，產出 persona。">複製 Prompt</button>
+        </div>
+        <div class="vp">
+          <div class="vp-num">03</div>
+          <div class="vp-text">
+            <div class="vp-kicker">Prototype</div>
+            <p class="vp-pull">根據上面的 persona，幫我做一個首頁的 HTML prototype。</p>
+          </div>
+          <button class="vp-copy" data-clip="根據上面的 persona，幫我做一個首頁的 HTML prototype。">複製 Prompt</button>
+        </div>
+        <div class="vp">
+          <div class="vp-num">04</div>
+          <div class="vp-text">
+            <div class="vp-kicker">Evaluation</div>
+            <p class="vp-pull">幫我評估這個 prototype 的可用性問題。</p>
+          </div>
+          <button class="vp-copy" data-clip="幫我評估這個 prototype 的可用性問題。">複製 Prompt</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. Round 1 反思 -->
+  <section class="slide">
+    <div class="head">
+      <span class="eyebrow slate-c">PAUSE</span>
+      <h2>Round 1 跑完，先停一下</h2>
+    </div>
+    <p class="lede">不討論好不好。先記下這三件事，等下 Round 2 跑完要回頭比對。</p>
+    <div class="body">
+      <div class="reflect-row">
+        <div class="reflect-tile">
+          <div class="r-num">01</div>
+          <div class="r-content">
+            <h4>速度</h4>
+            <p>跑完四階段花了多久？比你學期手做版快多少？</p>
+          </div>
+        </div>
+        <div class="reflect-tile">
+          <div class="r-num">02</div>
+          <div class="r-content">
+            <h4>落差</h4>
+            <p>哪裡明顯「不是你想要的」？AI 漏掉了什麼？</p>
+          </div>
+        </div>
+        <div class="reflect-tile">
+          <div class="r-num">03</div>
+          <div class="r-content">
+            <h4>驚喜</h4>
+            <p>有沒有意外讓你眼睛一亮？AI 看到你沒看到的？</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. Divider: Concepts -->
+  <section class="slide divider-slide">
+    <div></div>
+    <div>
+      <span class="eyebrow">INTERLUDE</span>
+      <h1 style="margin-top: 1rem;">Round 2 之前<br>先認識四個工具</h1>
+      <h3>CLAUDE.md　·　Skills　·　MCP　·　Plan Mode + Hooks</h3>
+    </div>
+    <div></div>
+  </section>
+
+  <!-- 10. CLAUDE.md -->
+  <section class="slide">
+    <div class="head">
+      <span class="eyebrow">CONCEPT 01 / 04</span>
+      <h2>CLAUDE.md</h2>
+    </div>
+    <p class="lede">放在專案資料夾的「給 AI 看的 brief」— 每次新對話自動讀。</p>
+    <div class="body">
+      <div class="p10-split">
+        <div class="file-window">
+          <div class="file-tab">CLAUDE.md</div>
+          <div class="file-content"><span class="cmt"># 產品</span>
+產品名稱: <span class="val">咖啡店 App</span>
+目標用戶: <span class="val">25-40 上班族</span>
+
+<span class="cmt"># Persona</span>
+講求速度、不喝甜的
+
+<span class="cmt"># 設計原則</span>
+- 不要 emoji
+- 不要漸層
+- 品牌色 #c2410c</div>
+        </div>
+        <div class="p10-side">
+          <span class="section-eyebrow">放什麼</span>
+          <h4>內容</h4>
+          <ul>
+            <li>產品是什麼、賣給誰</li>
+            <li>Persona、痛點、設計原則</li>
+            <li>研究發現、設計系統、品牌色</li>
+            <li>你不要 AI 做什麼</li>
+          </ul>
+          <div class="analogy">
+            <span class="section-eyebrow">類比</span>
+            <p>像 ChatGPT 的「自訂指令」 — 但範圍只在「這個專案」。寫一次，之後每次對話自動帶入。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11. Skills -->
+  <section class="slide">
+    <div class="head">
+      <span class="eyebrow">CONCEPT 02 / 04</span>
+      <h2>Skills</h2>
+    </div>
+    <p class="lede">別人（或你自己）寫好的「專業流程 SOP 套件」，AI 自動在對的時機呼叫。</p>
+    <div class="body">
+      <div class="p11-grid">
+        <div class="concept-table">
+          <div class="col">
+            <div class="col-eyebrow slate-c">CLAUDE.md</div>
+            <div class="col-title">WHAT</div>
+            <p>這個專案的「事實」</p>
+            <p class="example">例：產品定位、persona、品牌色、設計原則</p>
+          </div>
+          <div class="sep"></div>
+          <div class="col">
+            <div class="col-eyebrow">Skill</div>
+            <div class="col-title">HOW</div>
+            <p>處理事情的「流程」，跨專案都能用</p>
+            <p class="example">例：跑 thematic analysis、做 design review 的順序</p>
+          </div>
+        </div>
+        <div class="skills-row">
+          <div class="skills-card">
+            <span class="card-eyebrow ink">UX 場景特別有用</span>
+            <h4>內建 skills</h4>
+            <p><code>brainstorming</code>　發想前釐清</p>
+            <p><code>design-shotgun</code>　一次 4 個變體</p>
+            <p><code>design-html</code>　設計變真網頁</p>
+            <p><code>design-review</code>　設計挑錯</p>
+          </div>
+          <div class="skills-card accented">
+            <span class="card-eyebrow">自己寫</span>
+            <h4>你的研究 SOP，也能包成 Skill</h4>
+            <p>研究 SOP、評估 checklist、設計 review 流程，都能寫成你自己的 skill。</p>
+            <p>用 <code>writing-skills</code> 引導你寫 — 是「<strong>寫 skill 的 skill</strong>」。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12. MCP -->
+  <section class="slide">
+    <div class="head">
+      <span class="eyebrow">CONCEPT 03 / 04</span>
+      <h2>MCP</h2>
+    </div>
+    <p class="lede">讓 AI 直接讀寫你已經在用的平台 — 不用複製貼上搬資料。</p>
+    <div class="body">
+      <div class="mcp-row">
+        <div class="mcp-tile">
+          <div class="letter">F</div>
+          <h4>Figma</h4>
+          <p>讀設計稿　產資產</p>
+          <div class="use-case">把設計稿直接拉成可互動 HTML</div>
+        </div>
+        <div class="mcp-tile">
+          <div class="letter">N</div>
+          <h4>Notion</h4>
+          <p>讀研究筆記　寫報告</p>
+          <div class="use-case">訪談摘要直接寫進團隊文件</div>
+        </div>
+        <div class="mcp-tile">
+          <div class="letter">D</div>
+          <h4>Drive</h4>
+          <p>讀訪談稿　讀問卷</p>
+          <div class="use-case">PDF 訪談稿直接餵 AI 分析</div>
+        </div>
+        <div class="mcp-tile">
+          <div class="letter">S</div>
+          <h4>Slack</h4>
+          <p>同步團隊　找討論</p>
+          <div class="use-case">找出上週討論的設計方向</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13. Plan + Hooks -->
+  <section class="slide">
+    <div class="head">
+      <span class="eyebrow">CONCEPT 04 / 04</span>
+      <h2>Plan Mode + Hooks</h2>
+    </div>
+    <p class="lede">兩個讓 AI 行為更可控的工具。</p>
+    <div class="body">
+      <div class="p13-grid">
+        <div class="balance-card dark">
+          <span class="b-eyebrow">PLAN MODE</span>
+          <div class="b-title">先想清楚再動手</div>
+          <div class="key-cap-row">
+            <div class="key-cap">⇧ Tab</div>
+            <span class="key-cap-label">切換到 Plan Mode</span>
+          </div>
+          <p class="b-desc">AI 會先寫完整計劃讓你看，你同意才執行 — 不會偷偷改了你不想動的地方。</p>
+          <div class="b-foot">
+            <span class="b-foot-label">為什麼好用</span>
+            <p>跟 UX 思維天然契合：先 brief、討論方向，再下手做。</p>
+          </div>
+        </div>
+        <div class="balance-card light">
+          <span class="b-eyebrow">HOOKS</span>
+          <div class="b-title">事件觸發自動化</div>
+          <ul class="hooks-events">
+            <li>PreToolUse</li>
+            <li class="highlight">PostToolUse</li>
+            <li>UserPromptSubmit</li>
+            <li>Stop</li>
+            <li>SessionStart</li>
+            <li>Notification</li>
+          </ul>
+          <p class="b-desc">特定事件發生時，自動跑你寫的程式。</p>
+          <div class="b-foot">
+            <span class="b-foot-label">UX 神用法 · PostToolUse</span>
+            <p>改完 HTML 自動截圖到 <code>iterations/</code> — 設計演進視覺紀錄。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14. Divider: Round 2 -->
+  <section class="slide divider-slide">
+    <div></div>
+    <div>
+      <span class="eyebrow">PART 02 · 50 MIN</span>
+      <h1 style="margin-top: 1rem;">Round 2<br>完整跑法</h1>
+      <h3>有 brief、有 SOP、有專業評審 — 看 AI 變得多不一樣</h3>
+    </div>
+    <div></div>
+  </section>
+
+  <!-- 15. Prep -->
+  <section class="slide">
+    <div class="head">
+      <span class="eyebrow">PREP</span>
+      <h2>準備兩個檔案</h2>
+    </div>
+    <p class="lede">兩個都放到「<strong>你的工作資料夾</strong>」— 就是你之後打 <code>claude</code> 指令時所在的那個資料夾。</p>
+    <div class="body">
+      <div class="prep-stack">
+        <a href="https://drive.google.com/drive/folders/160oGu7ChsrtiPjIk_4qOy9tJQTcYTvwn?usp=drive_link" target="_blank" class="skills-callout">
+          <div class="left">
+            <span class="step-num">①</span>
+            <div class="info">
+              <span class="info-label">下載 Skills</span>
+              <span class="info-title">.claude/ 資料夾</span>
+              <span class="info-sub">下載後整個資料夾複製到你的工作資料夾，Claude Code 會自動載入。</span>
+            </div>
+          </div>
+          <span class="arrow">→ Google Drive</span>
+        </a>
+
+        <div class="template-card copy-wrap">
+          <div class="tpl-head">
+            <span class="step-num">②</span>
+            <div class="info">
+              <span class="info-label">CLAUDE.md 範本</span>
+              <span class="info-title">填好範本，存成 CLAUDE.md</span>
+              <span class="info-sub">放在你的工作資料夾。</span>
+            </div>
+          </div>
+          <button class="copy-btn" data-clip="# 我的產品
+產品名稱：
+一句話描述：
+目標用戶：
+
+# 我的研究風格
+研究方法偏好：[訪談 / 問卷 / 觀察 / 混合]
+分析時要特別關注：[情緒？行為？文化脈絡？]
+
+# 我的設計風格
+視覺調性：[極簡 / 活潑 / 專業 / 溫暖...]
+品牌色：[#色號]
+不要出現的元素：[例：emoji、漸層、卡通]
+
+# 我的評估重點
+最在意：[效率？學習曲線？情感體驗？]">複製範本</button>
+<pre><span class="cmt"># 我的產品</span>
+產品名稱：<span class="var">[填]</span>　　一句話描述：<span class="var">[填]</span>　　目標用戶：<span class="var">[填]</span>
+
+<span class="cmt"># 我的研究風格</span>
+研究方法偏好：<span class="var">[訪談 / 問卷 / 觀察 / 混合]</span>
+分析時要特別關注：<span class="var">[情緒？行為？文化脈絡？]</span>
+
+<span class="cmt"># 我的設計風格</span>
+視覺調性：<span class="var">[極簡 / 活潑 / 專業 / 溫暖...]</span>
+品牌色：<span class="var">[#色號]</span>　　不要出現的元素：<span class="var">[例：emoji、漸層、卡通]</span>
+
+<span class="cmt"># 我的評估重點</span>
+最在意：<span class="var">[效率？學習曲線？情感體驗？]</span></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 16. Phase 1 -->
+  <section class="slide phase-slide">
+    <div class="head">
+      <span class="eyebrow">PHASE 01 · 完整版</span>
+      <h2>研究計劃</h2>
+    </div>
+    <p class="lede">Research Plan — 用 brainstorming skill 釐清，再依 CLAUDE.md 產出。</p>
+    <div class="body">
+      <div class="prompt">
+        <div class="label">PROMPT</div>
+        <div class="text">
+          用 <code>brainstorming</code> skill 先幫我釐清研究範圍。然後依照 CLAUDE.md 裡的研究方法偏好，產出完整研究計劃：研究目標、招募條件、訪談題綱（10 題，要包含我關注的維度）、分析計劃、時程。
+        </div>
+      </div>
+    </div>
+    <div class="foot">
+      <span class="label">對比 Round 1</span>
+      有沒有把你的研究風格體現出來？題綱深度差在哪？
+    </div>
+  </section>
+
+  <!-- 17. Phase 2 -->
+  <section class="slide phase-slide">
+    <div class="head">
+      <span class="eyebrow">PHASE 02 · 完整版</span>
+      <h2>研究報告</h2>
+    </div>
+    <p class="lede">Synthesis — 依 CLAUDE.md 關注維度挖深，產出 persona + journey。</p>
+    <div class="body">
+      <div class="prompt">
+        <div class="label">PROMPT</div>
+        <div class="text">
+          這是 5 個訪談逐字稿（附檔）。請：①做 thematic analysis，產出 3-5 個主題　②依照 CLAUDE.md 我關注的維度，特別挖深　③產出 2 個 persona、user journey、機會點清單。
+        </div>
+      </div>
+    </div>
+    <div class="foot">
+      <span class="label">對比 Round 1</span>
+      AI 找到的 theme 跟你手動編 code 比，哪個更深？有沒有找到你沒想到的？
+    </div>
+  </section>
+
+  <!-- 18. Phase 3 -->
+  <section class="slide phase-slide">
+    <div class="head">
+      <span class="eyebrow">PHASE 03 · 完整版</span>
+      <h2>Wireframe & Prototype</h2>
+    </div>
+    <p class="lede">設計變體探索 → 高保真 prototype，符合 CLAUDE.md 視覺調性。</p>
+    <div class="body">
+      <div class="prompt">
+        <div class="label">PROMPT</div>
+        <div class="text">
+          用 <code>design-shotgun</code> 根據前面的 persona + journey，發想 4 個首頁設計方向。我選一個之後，用 <code>design-html</code> 做成高保真 prototype，依照 CLAUDE.md 的視覺調性和品牌色。完成後幫我開瀏覽器。
+        </div>
+      </div>
+    </div>
+    <div class="foot">
+      <span class="label">對比 Round 1</span>
+      有沒有真的呼應你的設計風格？視覺品質差多少？
+    </div>
+  </section>
+
+  <!-- 19. Phase 4 -->
+  <section class="slide phase-slide">
+    <div class="head">
+      <span class="eyebrow">PHASE 04 · 完整版</span>
+      <h2>Evaluation</h2>
+    </div>
+    <p class="lede">Usability critique — 雙重檢查：Nielsen heuristics + design-review skill。</p>
+    <div class="body">
+      <div class="prompt">
+        <div class="label">PROMPT</div>
+        <div class="text">
+          請對 Phase 3 的 prototype 做雙重檢查：①用 Nielsen 10 heuristics 評估，每條給：問題、嚴重度（1-4）、改善建議　②用 <code>design-review</code> 做視覺一致性檢查　③特別針對 CLAUDE.md 的「最在意」維度深入評估。
+        </div>
+      </div>
+    </div>
+    <div class="foot">
+      <span class="label">對比 Round 1</span>
+      抓到的問題深度差多少？跟你實際 usability test 找到的有重疊嗎？
+    </div>
+  </section>
+
+  <!-- 20. Reflection -->
+  <section class="slide">
+    <div class="head">
+      <span class="eyebrow">REFLECTION</span>
+      <h2>兩輪跑完，回頭看</h2>
+    </div>
+    <div class="body">
+      <div class="p20-grid">
+        <div class="quote-strip">
+          <div class="quote-label">關鍵觀察</div>
+          <div class="quote-text">關鍵不在 AI 寫得多好 — 在你怎麼<em>配置</em> AI。</div>
+        </div>
+        <div class="reflect-2col">
+          <div class="reflect-col">
+            <span class="col-eyebrow">ROUND 01 · VANILLA</span>
+            <h4>沒設定的 AI</h4>
+            <ul>
+              <li>速度有多快？</li>
+              <li>產出有多通用？</li>
+              <li>感覺像「AI 寫的」嗎？</li>
+            </ul>
+          </div>
+          <div class="reflect-col accented">
+            <span class="col-eyebrow">ROUND 02 · 完整版</span>
+            <h4>配置好的 AI</h4>
+            <ul>
+              <li>哪一階段差異最大？</li>
+              <li>哪個 component 貢獻最多？</li>
+              <li>你的判斷在哪幾步無可取代？</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 21. Closing -->
+  <section class="slide closing">
+    <div></div>
+    <div class="closing-body">
+      <span class="eyebrow">TAKEAWAYS</span>
+      <h2>帶回去繼續玩</h2>
+      <ul class="takeaway-list">
+        <li>挑一個今天沒用到的 skill 試試</li>
+        <li>拿你以前做完的研究報告（Phase 02），請 AI 蒸餾成可重用的 skill</li>
+        <li>把你的研究 SOP 包成 skill（用 <code>writing-skills</code>）</li>
+        <li>接一個 MCP 到 Figma 或 Notion</li>
+        <li>設一個 PostToolUse hook 記錄你的設計迭代</li>
+      </ul>
+      <div class="manifesto">
+        <div class="manifesto-line">AI 不會讓你變成 UX 設計師。<br>但會 <em>放大</em> 你已經會的事。</div>
+        <p class="manifesto-sub">判斷、品味、對使用者的同理 — 這些才是核心。</p>
+      </div>
+    </div>
+    <div></div>
+  </section>
+
+</div>
+
+<div class="nav">
+  <span class="counter"><span id="cur">1</span> / <span id="total">21</span></span>
+  <button onclick="prev()">←</button>
+  <button onclick="next()">→</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let idx = 0;
+  document.getElementById('total').textContent = slides.length;
+
+  function show(i) {
+    slides[idx].classList.remove('active');
+    idx = (i + slides.length) % slides.length;
+    slides[idx].classList.add('active');
+    document.getElementById('cur').textContent = idx + 1;
+  }
+  function next() { show(idx + 1); }
+  function prev() { show(idx - 1); }
+
+  document.addEventListener('keydown', e => {
+    if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A') return;
+    if (e.key === 'ArrowRight' || e.key === ' ') next();
+    if (e.key === 'ArrowLeft') prev();
+  });
+
+  function burstParticles(btn) {
+    const rect = btn.getBoundingClientRect();
+    const ox = rect.left + rect.width / 2;
+    const oy = rect.top + rect.height / 2;
+    const count = 11;
+    const sizes = ['copy-particle--sm', '', 'copy-particle--lg'];
+    // Mix ink particles only when the button itself sits on a light bg
+    const onLight = btn.classList.contains('vp-copy')
+      || btn.closest('.template-card');
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('span');
+      p.className = 'copy-particle ' + sizes[i % sizes.length];
+      if (onLight && i % 2 === 0) p.classList.add('copy-particle--ink');
+      const baseAngle = (Math.PI * 2 * i) / count;
+      const angle = baseAngle + (Math.random() - 0.5) * 0.45;
+      const dist = 34 + Math.random() * 26;
+      p.style.setProperty('--ox', ox + 'px');
+      p.style.setProperty('--oy', oy + 'px');
+      p.style.setProperty('--dx', (Math.cos(angle) * dist).toFixed(1) + 'px');
+      p.style.setProperty('--dy', (Math.sin(angle) * dist).toFixed(1) + 'px');
+      p.style.setProperty('--delay', Math.floor(Math.random() * 70) + 'ms');
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 850);
+    }
+  }
+
+  document.querySelectorAll('.copy-btn, .copy-btn-mini, .copy-btn-inline, .vp-copy').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const text = btn.dataset.clip || '';
+      if (!btn.dataset.label) btn.dataset.label = btn.textContent;
+      const orig = btn.dataset.label;
+      const reset = () => {
+        btn.textContent = orig;
+        btn.classList.remove('copied', 'copy-failed');
+      };
+      const replay = cls => {
+        btn.classList.remove('copied', 'copy-failed');
+        void btn.offsetWidth;
+        btn.classList.add(cls);
+      };
+      navigator.clipboard.writeText(text).then(() => {
+        btn.textContent = '已複製';
+        replay('copied');
+        burstParticles(btn);
+      }).catch(() => {
+        btn.textContent = '複製失敗';
+        replay('copy-failed');
+      });
+      clearTimeout(btn._copyTimer);
+      btn._copyTimer = setTimeout(reset, 1500);
+    });
+  });
+</script>
+
+</body>
+</html>
