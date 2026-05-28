@@ -52,7 +52,7 @@
     }
   }
 
-  document.querySelectorAll('.copy-btn, .copy-btn-mini, .copy-btn-inline, .vp-copy').forEach(btn => {
+  document.querySelectorAll('.copy-btn, .copy-btn-mini, .copy-btn-inline, .vp-copy, .step-copy').forEach(btn => {
     btn.addEventListener('click', e => {
       e.stopPropagation();
       const text = btn.dataset.clip || '';

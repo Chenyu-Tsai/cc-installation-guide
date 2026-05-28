@@ -651,18 +651,30 @@
       <span class="eyebrow">PHASE 01 · 完整版</span>
       <h2>研究計劃</h2>
     </div>
-    <p class="lede">Research Plan — 用 brainstorming skill 釐清，再依 CLAUDE.md 產出。</p>
+    <p class="lede">從「我想研究 X」到完整研究計劃，2 步搞定。</p>
     <div class="body">
-      <div class="prompt">
-        <div class="label">PROMPT</div>
-        <div class="text">
-          用 <code>brainstorming</code> skill 先幫我釐清研究範圍。然後依照 CLAUDE.md 裡的研究方法偏好，產出完整研究計劃：研究目標、招募條件、訪談題綱（10 題，要包含我關注的維度）、分析計劃、時程。
+      <div class="phase-flow">
+        <div class="phase-step">
+          <span class="step-num">①</span>
+          <div class="step-content">
+            <div class="step-prompt">用 <code>/brainstorming</code> 幫我釐清要研究什麼。</div>
+            <div class="step-note">Claude 會反問你 5-6 題（目標、constraints、假設）。回答到你覺得方向清楚為止。</div>
+          </div>
+          <button class="step-copy" data-clip="用 /brainstorming 幫我釐清要研究什麼。">複製</button>
+        </div>
+        <div class="phase-step">
+          <span class="step-num">②</span>
+          <div class="step-content">
+            <div class="step-prompt">根據剛剛的討論 + CLAUDE.md，用 <code>/research-plan</code> 產出完整計劃，存到 <code>research/</code>。</div>
+            <div class="step-note">寫出 <code>research/research-plan.md</code> — 研究問題、objectives、hypotheses、招募條件、時程。</div>
+          </div>
+          <button class="step-copy" data-clip="根據剛剛的討論 + CLAUDE.md，用 /research-plan 產出完整計劃，存到 research/。">複製</button>
         </div>
       </div>
     </div>
     <div class="foot">
       <span class="label">對比 Round 1</span>
-      有沒有把你的研究風格體現出來？題綱深度差在哪？
+      有沒有把你的研究風格體現出來？brainstorming 反問的題目有沒有逼出你沒想到的角度？
     </div>
   </section>
 
@@ -672,21 +684,38 @@
       <span class="eyebrow">PHASE 02 · 完整版</span>
       <h2>研究一條龍</h2>
     </div>
-    <p class="lede">研究主題 → 訪綱 → 模擬訪談 → 萃取 insight，4 個 skill 接力跑。</p>
+    <p class="lede">訪綱 → 模擬訪談 → 萃取 insight，3 個 skill 接力跑。</p>
     <div class="body">
-      <div class="prompt">
-        <div class="label">CHAIN</div>
-        <div class="text">
-          ① <code>/research-plan</code>　從研究主題產出計劃<br>
-          ② <code>/interview-guide</code>　從計劃寫訪綱（含 rationale + probes）<br>
-          ③ <code>/interview-simulator</code>　跑 5 個模擬訪談（沒真實資料也能練 synthesis）<br>
-          ④ <code>/thematic-analysis</code>　找 3-5 個主題 + persona + journey + 機會點
+      <div class="phase-flow">
+        <div class="phase-step">
+          <span class="step-num">①</span>
+          <div class="step-content">
+            <div class="step-prompt">看 <code>research/research-plan.md</code>，用 <code>/interview-guide</code> 寫訪綱，存到同一個 folder。</div>
+            <div class="step-note">產出 <code>research/interview-guide.md</code> — 10-12 題、6 個 section、每題附 rationale + probes。</div>
+          </div>
+          <button class="step-copy" data-clip="看 research/research-plan.md，用 /interview-guide 寫訪綱，存到同一個 folder。">複製</button>
+        </div>
+        <div class="phase-step">
+          <span class="step-num">②</span>
+          <div class="step-content">
+            <div class="step-prompt">用 <code>/interview-simulator</code> 根據訪綱跑 5 個模擬訪談，放在 <code>research/transcripts/</code>。</div>
+            <div class="step-note">Claude 會問你要哪 5 個 persona（或用 Adoption Curve 預設）。每份 3000+ 字。</div>
+          </div>
+          <button class="step-copy" data-clip="用 /interview-simulator 根據訪綱跑 5 個模擬訪談，放在 research/transcripts/。">複製</button>
+        </div>
+        <div class="phase-step">
+          <span class="step-num">③</span>
+          <div class="step-content">
+            <div class="step-prompt">用 <code>/thematic-analysis</code> 分析 <code>research/transcripts/</code>，產出 <code>research/synthesis.md</code>。</div>
+            <div class="step-note">Open coding → axial coding → 3-5 themes + 2 personas + journey + 機會點清單。</div>
+          </div>
+          <button class="step-copy" data-clip="用 /thematic-analysis 分析 research/transcripts/，產出 research/synthesis.md。">複製</button>
         </div>
       </div>
     </div>
     <div class="foot">
       <span class="label">對比 Round 1</span>
-      AI 找到的 theme 跟你手動編 code 比，哪個更深？模擬訪談跟真實訪談的落差在哪？
+      AI 找到的 theme 跟你手動 code 比，哪個更深？模擬訪談跟真實訪談的落差在哪？
     </div>
   </section>
 
@@ -694,20 +723,40 @@
   <section class="slide phase-slide">
     <div class="head">
       <span class="eyebrow">PHASE 03 · 完整版</span>
-      <h2>Wireframe & Prototype</h2>
+      <h2>設計三步</h2>
     </div>
-    <p class="lede">設計變體探索 → 高保真 prototype，符合 CLAUDE.md 視覺調性。</p>
+    <p class="lede">視覺系統 → 4 個變體 → 定稿，每一步都看得到截圖。</p>
     <div class="body">
-      <div class="prompt">
-        <div class="label">PROMPT</div>
-        <div class="text">
-          用 <code>design-shotgun</code> 根據前面的 persona + journey，發想 4 個首頁設計方向。我選一個之後，用 <code>design-html</code> 做成高保真 prototype，依照 CLAUDE.md 的視覺調性和品牌色。完成後幫我開瀏覽器。
+      <div class="phase-flow">
+        <div class="phase-step">
+          <span class="step-num">①</span>
+          <div class="step-content">
+            <div class="step-prompt">根據 <code>research/synthesis.md</code>，用 <code>/design-consultation</code> 建立 <code>DESIGN.md</code>。</div>
+            <div class="step-note">Claude 反問你視覺方向 5 題，提案 type / color / layout，截圖預覽給你看。</div>
+          </div>
+          <button class="step-copy" data-clip="根據 research/synthesis.md，用 /design-consultation 建立 DESIGN.md。">複製</button>
+        </div>
+        <div class="phase-step">
+          <span class="step-num">②</span>
+          <div class="step-content">
+            <div class="step-prompt">用 <code>/design-shotgun</code> 根據 persona + DESIGN.md，發想 4 個首頁變體，放在 <code>design/variants/</code>。</div>
+            <div class="step-note">Claude 先提 4 個 concept 名稱讓你確認，再寫 4 個 HTML + 截圖 side-by-side 比較。</div>
+          </div>
+          <button class="step-copy" data-clip="用 /design-shotgun 根據 persona + DESIGN.md，發想 4 個首頁變體，放在 design/variants/。">複製</button>
+        </div>
+        <div class="phase-step">
+          <span class="step-num">③</span>
+          <div class="step-content">
+            <div class="step-prompt">我選 v[X]，用 <code>/design-html</code> 變成 production 版 <code>design/prototype.html</code>。</div>
+            <div class="step-note">寫 semantic HTML + 3 viewport（mobile / tablet / desktop）截圖驗證。</div>
+          </div>
+          <button class="step-copy" data-clip="我選 v[X]，用 /design-html 變成 production 版 design/prototype.html。">複製</button>
         </div>
       </div>
     </div>
     <div class="foot">
       <span class="label">對比 Round 1</span>
-      有沒有真的呼應你的設計風格？視覺品質差多少？
+      4 個變體有沒有真的 distinct？最後 prototype 跟你的視覺調性吻合多少？
     </div>
   </section>
 
@@ -715,22 +764,40 @@
   <section class="slide phase-slide">
     <div class="head">
       <span class="eyebrow">PHASE 04 · 完整版</span>
-      <h2>雙軌評估</h2>
+      <h2>雙軌評估 + 修</h2>
     </div>
-    <p class="lede">Usability critique — 結構化 + 設計師眼。兩個 skill 互補，不重疊。</p>
+    <p class="lede">結構化 + 設計師眼，兩條路徑互補，最後直接修嚴重的問題。</p>
     <div class="body">
-      <div class="prompt">
-        <div class="label">CHAIN</div>
-        <div class="text">
-          ① <code>/heuristic-evaluation</code>　Nielsen 10 條走一遍，每條 severity 1-4 + 證據 + fix<br>
-          ② <code>/design-review</code>　設計師眼：視覺一致性、hierarchy、AI slop pattern<br>
-          ③ 特別針對 CLAUDE.md 的「最在意」維度深入評估
+      <div class="phase-flow">
+        <div class="phase-step">
+          <span class="step-num">①</span>
+          <div class="step-content">
+            <div class="step-prompt">用 <code>/heuristic-evaluation</code> 評 <code>design/prototype.html</code>。</div>
+            <div class="step-note">截 3 viewport，每條 Nielsen heuristic 給 severity 1-4 + 證據 + 具體 fix。</div>
+          </div>
+          <button class="step-copy" data-clip="用 /heuristic-evaluation 評 design/prototype.html。">複製</button>
+        </div>
+        <div class="phase-step">
+          <span class="step-num">②</span>
+          <div class="step-content">
+            <div class="step-prompt">用 <code>/design-review</code> 從設計師眼補一輪，存到 <code>design/review.md</code>。</div>
+            <div class="step-note">抓 heuristic 抓不到的：視覺一致性、hierarchy、AI slop pattern。</div>
+          </div>
+          <button class="step-copy" data-clip="用 /design-review 從設計師眼補一輪，存到 design/review.md。">複製</button>
+        </div>
+        <div class="phase-step">
+          <span class="step-num">③</span>
+          <div class="step-content">
+            <div class="step-prompt">對 severity ≥ 3 的問題直接修，修完 before / after 截圖比對。</div>
+            <div class="step-note">Edit <code>prototype.html</code> → re-screenshot → Read PNG 驗證 → 重複到無 ≥ 3。</div>
+          </div>
+          <button class="step-copy" data-clip="對 severity ≥ 3 的問題直接修，修完 before / after 截圖比對。">複製</button>
         </div>
       </div>
     </div>
     <div class="foot">
       <span class="label">對比 Round 1</span>
-      結構化（heuristic）跟感受（design-review）抓到的問題重疊多少？跟你實際 usability test 比呢？
+      結構化（heuristic）跟設計師眼（design-review）抓到的問題重疊多少？修完問題的迭代速度差多少？
     </div>
   </section>
 
