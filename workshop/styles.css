@@ -1301,6 +1301,30 @@
     margin-top: 0.8rem;
     line-height: 1.5;
   }
+  .closing .closing-contact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.5rem;
+  }
+  .closing .contact-label {
+    font-size: clamp(1rem, 1.3cqw, 1.2rem);
+    color: var(--ink-2);
+    line-height: 1.5;
+  }
+  .closing .contact-email {
+    font-size: clamp(1.25rem, 1.7cqw, 1.6rem);
+    font-weight: 700;
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+    border-bottom: 1.5px solid transparent;
+    transition: border-color 0.15s ease;
+  }
+  .closing .contact-email:hover {
+    border-bottom-color: var(--accent);
+  }
 
   /* ===== Pre-flight slide ===== */
   .preflight-stack {
